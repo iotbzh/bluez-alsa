@@ -65,6 +65,10 @@ struct bluez_a2dp_frequency bluez_a2dp_frequencies_aac[12];
 struct bluez_a2dp_channel_mode bluez_a2dp_channels_aptx[1];
 struct bluez_a2dp_frequency bluez_a2dp_frequencies_aptx[4];
 #endif
+#if ENABLE_LDAC
+struct bluez_a2dp_channel_mode bluez_a2dp_channels_ldac[3];
+struct bluez_a2dp_frequency bluez_a2dp_frequencies_ldac[4];
+#endif
 
 /* NULL-terminated list of available A2DP codecs */
 const struct bluez_a2dp_codec **bluez_a2dp_codecs;

@@ -219,6 +219,43 @@ static void bluez_endpoint_select_configuration(GDBusMethodInvocation *inv, void
 	}
 #endif
 
+#if ENABLE_LDAC
+	case A2DP_CODEC_VENDOR_LDAC: {
+
+		if (size != sizeof(a2dp_ldac_t)) {
+			error("Invalid capabilities size: %zu != %zu", size, sizeof(a2dp_ldac_t));
+			goto fail;
+		}
+
+		a2dp_ldac_t *cap = (a2dp_ldac_t *)capabilities;
+		unsigned int ch_mod = cap->channel_mode;
+		unsigned int freq = cap->frequency;
+		size_t i;
+
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_channels_ldac); i++)
+			if (bluez_a2dp_channels_ldac[i].value & ch_mod) {
+				cap->channel_mode = bluez_a2dp_channels_ldac[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_channels_ldac)) {
+			error("No supported channel modes: %#x", ch_mod);
+			goto fail;
+		}
+
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_frequencies_ldac); i++)
+			if (bluez_a2dp_frequencies_ldac[i].value & freq) {
+				cap->frequency = bluez_a2dp_frequencies_ldac[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_frequencies_ldac)) {
+			error("No supported sampling frequencies: %#x", freq);
+			goto fail;
+		}
+
+		break;
+	}
+#endif
+
 	default:
 		debug("Endpoint path not supported: %s", path);
 		g_dbus_method_invocation_return_error(inv, G_DBUS_ERROR,
@@ -433,6 +470,35 @@ static int bluez_endpoint_set_configuration(GDBusMethodInvocation *inv, void *us
 				}
 
 				if (cap->channel_mode != APTX_CHANNEL_MODE_STEREO) {
+					error("Invalid configuration: %s", "Invalid channel mode");
+					goto fail;
+				}
+
+				break;
+			}
+#endif
+
+#if ENABLE_LDAC
+			case A2DP_CODEC_VENDOR_LDAC: {
+
+				if (size != sizeof(a2dp_ldac_t)) {
+					error("Invalid configuration: %s", "Invalid size");
+					goto fail;
+				}
+
+				a2dp_ldac_t *cap = (a2dp_ldac_t *)capabilities;
+
+				if (cap->frequency != LDAC_SAMPLING_FREQ_44100 &&
+						cap->frequency != LDAC_SAMPLING_FREQ_48000 &&
+						cap->frequency != LDAC_SAMPLING_FREQ_88200 &&
+						cap->frequency != LDAC_SAMPLING_FREQ_96000) {
+					error("Invalid configuration: %s", "Invalid sampling frequency");
+					goto fail;
+				}
+
+				if (cap->channel_mode != LDAC_CHANNEL_MODE_MONO &&
+						cap->channel_mode != LDAC_CHANNEL_MODE_DUAL_CHANNEL &&
+						cap->channel_mode != LDAC_CHANNEL_MODE_STEREO) {
 					error("Invalid configuration: %s", "Invalid channel mode");
 					goto fail;
 				}
@@ -1134,6 +1200,16 @@ void bluez_set_configuration(void) {
 				bluez_a2dp_frequencies_aptx,
 				ARRAYSIZE(bluez_a2dp_frequencies_aptx),
 				sizeof(*bluez_a2dp_frequencies_aptx) } },
+#endif
+#if ENABLE_LDAC
+		{ .chs = {
+				bluez_a2dp_channels_ldac,
+				ARRAYSIZE(bluez_a2dp_channels_ldac),
+				sizeof(*bluez_a2dp_channels_ldac) },
+			.freqs = {
+				bluez_a2dp_frequencies_ldac,
+				ARRAYSIZE(bluez_a2dp_frequencies_ldac),
+				sizeof(*bluez_a2dp_frequencies_ldac) } },
 #endif
 	};
 
