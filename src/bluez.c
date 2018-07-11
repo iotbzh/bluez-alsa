@@ -27,6 +27,10 @@
 
 
 /**
+ * Convenient macro for getting "on the stack" array size. */
+#define ARRAYSIZE(a) (sizeof(a) / sizeof(*(a)))
+
+/**
  * Get D-Bus object reference count for given profile. */
 static int bluez_get_dbus_object_count(enum bluetooth_profile profile, uint16_t codec) {
 
@@ -66,36 +70,27 @@ static void bluez_endpoint_select_configuration(GDBusMethodInvocation *inv, void
 		}
 
 		a2dp_sbc_t *cap = (a2dp_sbc_t *)capabilities;
+		unsigned int ch_mod = cap->channel_mode;
+		unsigned int freq = cap->frequency;
+		size_t i;
 
-		if (config.a2dp.force_44100 &&
-				cap->frequency & SBC_SAMPLING_FREQ_44100)
-			cap->frequency = SBC_SAMPLING_FREQ_44100;
-		else if (cap->frequency & SBC_SAMPLING_FREQ_48000)
-			cap->frequency = SBC_SAMPLING_FREQ_48000;
-		else if (cap->frequency & SBC_SAMPLING_FREQ_44100)
-			cap->frequency = SBC_SAMPLING_FREQ_44100;
-		else if (cap->frequency & SBC_SAMPLING_FREQ_32000)
-			cap->frequency = SBC_SAMPLING_FREQ_32000;
-		else if (cap->frequency & SBC_SAMPLING_FREQ_16000)
-			cap->frequency = SBC_SAMPLING_FREQ_16000;
-		else {
-			error("No supported sampling frequencies: %#x", cap->frequency);
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_channels_sbc); i++)
+			if (bluez_a2dp_channels_sbc[i].value & ch_mod) {
+				cap->channel_mode = bluez_a2dp_channels_sbc[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_channels_sbc)) {
+			error("No supported channel modes: %#x", ch_mod);
 			goto fail;
 		}
 
-		if (config.a2dp.force_mono &&
-				cap->channel_mode & SBC_CHANNEL_MODE_MONO)
-			cap->channel_mode = SBC_CHANNEL_MODE_MONO;
-		else if (cap->channel_mode & SBC_CHANNEL_MODE_JOINT_STEREO)
-			cap->channel_mode = SBC_CHANNEL_MODE_JOINT_STEREO;
-		else if (cap->channel_mode & SBC_CHANNEL_MODE_STEREO)
-			cap->channel_mode = SBC_CHANNEL_MODE_STEREO;
-		else if (cap->channel_mode & SBC_CHANNEL_MODE_DUAL_CHANNEL)
-			cap->channel_mode = SBC_CHANNEL_MODE_DUAL_CHANNEL;
-		else if (cap->channel_mode & SBC_CHANNEL_MODE_MONO)
-			cap->channel_mode = SBC_CHANNEL_MODE_MONO;
-		else {
-			error("No supported channel modes: %#x", cap->channel_mode);
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_frequencies_sbc); i++)
+			if (bluez_a2dp_frequencies_sbc[i].value & freq) {
+				cap->frequency = bluez_a2dp_frequencies_sbc[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_frequencies_sbc)) {
+			error("No supported sampling frequencies: %#x", freq);
 			goto fail;
 		}
 
@@ -146,6 +141,29 @@ static void bluez_endpoint_select_configuration(GDBusMethodInvocation *inv, void
 		}
 
 		a2dp_aac_t *cap = (a2dp_aac_t *)capabilities;
+		unsigned int ch_mod = cap->channels;
+		unsigned int freq = AAC_GET_FREQUENCY(*cap);
+		size_t i;
+
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_channels_aac); i++)
+			if (bluez_a2dp_channels_aac[i].value & ch_mod) {
+				cap->channels = bluez_a2dp_channels_aac[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_channels_aac)) {
+			error("No supported channel modes: %#x", ch_mod);
+			goto fail;
+		}
+
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_frequencies_aac); i++)
+			if (bluez_a2dp_frequencies_aac[i].value & freq) {
+				AAC_SET_FREQUENCY(*cap, bluez_a2dp_frequencies_aac[i].value);
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_frequencies_aac)) {
+			error("No supported sampling frequencies: %#x", freq);
+			goto fail;
+		}
 
 		if (cap->object_type & AAC_OBJECT_TYPE_MPEG4_AAC_SCA)
 			cap->object_type = AAC_OBJECT_TYPE_MPEG4_AAC_SCA;
@@ -157,51 +175,6 @@ static void bluez_endpoint_select_configuration(GDBusMethodInvocation *inv, void
 			cap->object_type = AAC_OBJECT_TYPE_MPEG2_AAC_LC;
 		else {
 			error("No supported object type: %#x", cap->object_type);
-			goto fail;
-		}
-
-		unsigned int sampling = AAC_GET_FREQUENCY(*cap);
-		if (config.a2dp.force_44100 &&
-				sampling & AAC_SAMPLING_FREQ_44100)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_44100);
-		else if (sampling & AAC_SAMPLING_FREQ_96000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_96000);
-		else if (sampling & AAC_SAMPLING_FREQ_88200)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_88200);
-		else if (sampling & AAC_SAMPLING_FREQ_64000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_64000);
-		else if (sampling & AAC_SAMPLING_FREQ_48000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_48000);
-		else if (sampling & AAC_SAMPLING_FREQ_44100)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_44100);
-		else if (sampling & AAC_SAMPLING_FREQ_32000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_32000);
-		else if (sampling & AAC_SAMPLING_FREQ_24000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_24000);
-		else if (sampling & AAC_SAMPLING_FREQ_22050)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_22050);
-		else if (sampling & AAC_SAMPLING_FREQ_16000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_16000);
-		else if (sampling & AAC_SAMPLING_FREQ_12000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_12000);
-		else if (sampling & AAC_SAMPLING_FREQ_11025)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_11025);
-		else if (sampling & AAC_SAMPLING_FREQ_8000)
-			AAC_SET_FREQUENCY(*cap, AAC_SAMPLING_FREQ_8000);
-		else {
-			error("No supported sampling frequencies: %#x", sampling);
-			goto fail;
-		}
-
-		if (config.a2dp.force_mono &&
-				cap->channels & AAC_CHANNELS_1)
-			cap->channels = AAC_CHANNELS_1;
-		else if (cap->channels & AAC_CHANNELS_2)
-			cap->channels = AAC_CHANNELS_2;
-		else if (cap->channels & AAC_CHANNELS_1)
-			cap->channels = AAC_CHANNELS_1;
-		else {
-			error("No supported channels: %#x", cap->channels);
 			goto fail;
 		}
 
@@ -218,27 +191,27 @@ static void bluez_endpoint_select_configuration(GDBusMethodInvocation *inv, void
 		}
 
 		a2dp_aptx_t *cap = (a2dp_aptx_t *)capabilities;
+		unsigned int ch_mod = cap->channel_mode;
+		unsigned int freq = cap->frequency;
+		size_t i;
 
-		if (config.a2dp.force_44100 &&
-				cap->frequency & APTX_SAMPLING_FREQ_44100)
-			cap->frequency = APTX_SAMPLING_FREQ_44100;
-		else if (cap->frequency & APTX_SAMPLING_FREQ_48000)
-			cap->frequency = APTX_SAMPLING_FREQ_48000;
-		else if (cap->frequency & APTX_SAMPLING_FREQ_44100)
-			cap->frequency = APTX_SAMPLING_FREQ_44100;
-		else if (cap->frequency & APTX_SAMPLING_FREQ_32000)
-			cap->frequency = APTX_SAMPLING_FREQ_32000;
-		else if (cap->frequency & APTX_SAMPLING_FREQ_16000)
-			cap->frequency = APTX_SAMPLING_FREQ_16000;
-		else {
-			error("No supported sampling frequencies: %#x", cap->frequency);
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_channels_aptx); i++)
+			if (bluez_a2dp_channels_aptx[i].value & ch_mod) {
+				cap->channel_mode = bluez_a2dp_channels_aptx[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_channels_aptx)) {
+			error("No supported channel modes: %#x", ch_mod);
 			goto fail;
 		}
 
-		if (cap->channel_mode & APTX_CHANNEL_MODE_STEREO)
-			cap->channel_mode = APTX_CHANNEL_MODE_STEREO;
-		else {
-			error("No supported channel modes: %#x", cap->channel_mode);
+		for (i = 0; i < ARRAYSIZE(bluez_a2dp_frequencies_aptx); i++)
+			if (bluez_a2dp_frequencies_aptx[i].value & freq) {
+				cap->frequency = bluez_a2dp_frequencies_aptx[i].value;
+				break;
+			}
+		if (i == ARRAYSIZE(bluez_a2dp_frequencies_aptx)) {
+			error("No supported sampling frequencies: %#x", freq);
 			goto fail;
 		}
 
@@ -1077,6 +1050,101 @@ fail:
 		g_variant_iter_free(properties);
 	if (value != NULL)
 		g_variant_unref(value);
+}
+
+static int cmp_a2dp_channels(
+		const struct bluez_a2dp_channel_mode *v1,
+		const struct bluez_a2dp_channel_mode *v2) {
+	if (config.a2dp.force_mono) {
+		if (v1->channel_mode == BLUEZ_A2DP_CHM_MONO)
+			return -1;
+		if (v2->channel_mode == BLUEZ_A2DP_CHM_MONO)
+			return 1;
+	}
+	return v2->channel_mode - v1->channel_mode;
+}
+
+static int cmp_a2dp_frequencies(
+		const struct bluez_a2dp_frequency *v1,
+		const struct bluez_a2dp_frequency *v2) {
+	if (config.a2dp.force_44100) {
+		if (v1->frequency == 44100)
+			return -1;
+		if (v2->frequency == 44100)
+			return 1;
+	}
+	int d1 = abs(v1->frequency - config.a2dp.target_freq);
+	int d2 = abs(v2->frequency - config.a2dp.target_freq);
+	if (d1 == d2)
+		/* higher frequency takes precedence */
+		return v2->frequency - v1->frequency;
+	return d1 - d2;
+}
+
+/**
+ * Initialize configuration used by BlueZ handlers. */
+void bluez_set_configuration(void) {
+
+	static const struct {
+		struct {
+			void *base;
+			size_t nmemb;
+			size_t size;
+		} chs;
+		struct {
+			void *base;
+			size_t nmemb;
+			size_t size;
+		} freqs;
+	} a2dp_configs[] = {
+		{ .chs = {
+				bluez_a2dp_channels_sbc,
+				ARRAYSIZE(bluez_a2dp_channels_sbc),
+				sizeof(*bluez_a2dp_channels_sbc) },
+			.freqs = {
+				bluez_a2dp_frequencies_sbc,
+				ARRAYSIZE(bluez_a2dp_frequencies_sbc),
+				sizeof(*bluez_a2dp_frequencies_sbc) } },
+#if ENABLE_MPEG
+		{ .chs = {
+				bluez_a2dp_channels_mpeg,
+				ARRAYSIZE(bluez_a2dp_channels_mpeg),
+				sizeof(*bluez_a2dp_channels_mpeg) },
+			.freqs = {
+				bluez_a2dp_frequencies_mpeg,
+				ARRAYSIZE(bluez_a2dp_frequencies_mpeg),
+				sizeof(*bluez_a2dp_frequencies_mpeg) } },
+#endif
+#if ENABLE_AAC
+		{ .chs = {
+				bluez_a2dp_channels_aac,
+				ARRAYSIZE(bluez_a2dp_channels_aac),
+				sizeof(*bluez_a2dp_channels_aac) },
+			.freqs = {
+				bluez_a2dp_frequencies_aac,
+				ARRAYSIZE(bluez_a2dp_frequencies_aac),
+				sizeof(*bluez_a2dp_frequencies_aac) } },
+#endif
+#if ENABLE_APTX
+		{ .chs = {
+				bluez_a2dp_channels_aptx,
+				ARRAYSIZE(bluez_a2dp_channels_aptx),
+				sizeof(*bluez_a2dp_channels_aptx) },
+			.freqs = {
+				bluez_a2dp_frequencies_aptx,
+				ARRAYSIZE(bluez_a2dp_frequencies_aptx),
+				sizeof(*bluez_a2dp_frequencies_aptx) } },
+#endif
+	};
+
+	size_t i;
+	for (i = 0; i < ARRAYSIZE(a2dp_configs); i++) {
+		qsort(a2dp_configs[i].chs.base, a2dp_configs[i].chs.nmemb, a2dp_configs[i].chs.size,
+				(int (*)(const void *, const void *))cmp_a2dp_channels);
+		qsort(a2dp_configs[i].freqs.base, a2dp_configs[i].freqs.nmemb, a2dp_configs[i].freqs.size,
+				(int (*)(const void *, const void *))cmp_a2dp_frequencies);
+	}
+
 }
 
 /**

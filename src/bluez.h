@@ -1,6 +1,6 @@
 /*
  * BlueALSA - bluez.h
- * Copyright (c) 2016-2017 Arkadiusz Bokowy
+ * Copyright (c) 2016-2018 Arkadiusz Bokowy
  *
  * This file is a part of bluez-alsa.
  *
@@ -31,6 +31,7 @@ enum bluetooth_profile {
 
 void bluez_register_a2dp(void);
 void bluez_register_hfp(void);
+void bluez_set_configuration(void);
 int bluez_subscribe_signals(void);
 
 #endif

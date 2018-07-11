@@ -8,10 +8,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
 #include "bluez-a2dp.h"
 
 static const a2dp_sbc_t a2dp_sbc = {
@@ -182,7 +178,7 @@ static const struct bluez_a2dp_codec *a2dp_codecs[] = {
 	&a2dp_codec_source_aac,
 	&a2dp_codec_sink_aac,
 #endif
-#if ENABLE_MP3
+#if ENABLE_MPEG
 	&a2dp_codec_source_mpeg,
 	&a2dp_codec_sink_mpeg,
 #endif
@@ -190,5 +186,60 @@ static const struct bluez_a2dp_codec *a2dp_codecs[] = {
 	&a2dp_codec_sink_sbc,
 	NULL,
 };
+
+struct bluez_a2dp_channel_mode bluez_a2dp_channels_sbc[4] = {
+	{ BLUEZ_A2DP_CHM_JOINT_STEREO, SBC_CHANNEL_MODE_JOINT_STEREO },
+	{ BLUEZ_A2DP_CHM_STEREO, SBC_CHANNEL_MODE_STEREO },
+	{ BLUEZ_A2DP_CHM_DUAL_CHANNEL, SBC_CHANNEL_MODE_DUAL_CHANNEL },
+	{ BLUEZ_A2DP_CHM_MONO, SBC_CHANNEL_MODE_MONO }};
+struct bluez_a2dp_frequency bluez_a2dp_frequencies_sbc[4] = {
+	{ 48000, SBC_SAMPLING_FREQ_48000 },
+	{ 44100, SBC_SAMPLING_FREQ_44100 },
+	{ 32000, SBC_SAMPLING_FREQ_32000 },
+	{ 16000, SBC_SAMPLING_FREQ_16000 }};
+
+#if ENABLE_MPEG
+struct bluez_a2dp_channel_mode bluez_a2dp_channels_mpeg[4] = {
+	{ BLUEZ_A2DP_CHM_JOINT_STEREO, MPEG_CHANNEL_MODE_JOINT_STEREO },
+	{ BLUEZ_A2DP_CHM_STEREO, MPEG_CHANNEL_MODE_STEREO },
+	{ BLUEZ_A2DP_CHM_DUAL_CHANNEL, MPEG_CHANNEL_MODE_DUAL_CHANNEL },
+	{ BLUEZ_A2DP_CHM_MONO, MPEG_CHANNEL_MODE_MONO }};
+struct bluez_a2dp_frequency bluez_a2dp_frequencies_mpeg[6] = {
+	{ 48000, MPEG_SAMPLING_FREQ_48000 },
+	{ 44100, MPEG_SAMPLING_FREQ_44100 },
+	{ 32000, MPEG_SAMPLING_FREQ_32000 },
+	{ 24000, MPEG_SAMPLING_FREQ_24000 },
+	{ 22050, MPEG_SAMPLING_FREQ_22050 },
+	{ 16000, MPEG_SAMPLING_FREQ_16000 }};
+#endif
+
+#if ENABLE_AAC
+struct bluez_a2dp_channel_mode bluez_a2dp_channels_aac[2] = {
+	{ BLUEZ_A2DP_CHM_STEREO, AAC_CHANNELS_2 },
+	{ BLUEZ_A2DP_CHM_MONO, AAC_CHANNELS_1 }};
+struct bluez_a2dp_frequency bluez_a2dp_frequencies_aac[12] = {
+	{ 96000, AAC_SAMPLING_FREQ_96000 },
+	{ 88200, AAC_SAMPLING_FREQ_88200 },
+	{ 64000, AAC_SAMPLING_FREQ_64000 },
+	{ 48000, AAC_SAMPLING_FREQ_48000 },
+	{ 44100, AAC_SAMPLING_FREQ_44100 },
+	{ 32000, AAC_SAMPLING_FREQ_32000 },
+	{ 24000, AAC_SAMPLING_FREQ_24000 },
+	{ 22050, AAC_SAMPLING_FREQ_22050 },
+	{ 16000, AAC_SAMPLING_FREQ_16000 },
+	{ 12000, AAC_SAMPLING_FREQ_12000 },
+	{ 11025, AAC_SAMPLING_FREQ_11025 },
+	{ 8000, AAC_SAMPLING_FREQ_8000 }};
+#endif
+
+#if ENABLE_APTX
+struct bluez_a2dp_channel_mode bluez_a2dp_channels_aptx[1] = {
+	{ BLUEZ_A2DP_CHM_STEREO, APTX_CHANNEL_MODE_STEREO }};
+struct bluez_a2dp_frequency bluez_a2dp_frequencies_aptx[4] = {
+	{ 48000, APTX_SAMPLING_FREQ_48000 },
+	{ 44100, APTX_SAMPLING_FREQ_44100 },
+	{ 32000, APTX_SAMPLING_FREQ_32000 },
+	{ 16000, APTX_SAMPLING_FREQ_16000 }};
+#endif
 
 const struct bluez_a2dp_codec **bluez_a2dp_codecs = a2dp_codecs;

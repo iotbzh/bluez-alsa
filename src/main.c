@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
 		{ "profile", required_argument, NULL, 'p' },
 		{ "a2dp-force-mono", no_argument, NULL, 6 },
 		{ "a2dp-force-audio-cd", no_argument, NULL, 7 },
+		{ "a2dp-target-freq", required_argument, NULL, 9 },
 		{ "a2dp-volume", no_argument, NULL, 8 },
 #if ENABLE_AAC
 		{ "aac-afterburner", no_argument, NULL, 4 },
@@ -139,7 +140,8 @@ int main(int argc, char **argv) {
 					"  -i, --device=hciX\tHCI device to use\n"
 					"  -p, --profile=NAME\tenable BT profile\n"
 					"  --a2dp-force-mono\tforce monophonic sound\n"
-					"  --a2dp-force-audio-cd\tforce 44.1 kHz sampling\n"
+					"  --a2dp-force-audio-cd\tforce 44.1 kHz sampling freq\n"
+					"  --a2dp-target-freq=NB\tselect sampling freq near NB\n"
 					"  --a2dp-volume\t\tcontrol volume natively\n"
 #if ENABLE_AAC
 					"  --aac-afterburner\tenable afterburner\n"
@@ -235,6 +237,9 @@ int main(int argc, char **argv) {
 		case 7 /* --a2dp-force-audio-cd */ :
 			config.a2dp.force_44100 = true;
 			break;
+		case 9 /* --a2dp-target-freq=NB */ :
+			config.a2dp.target_freq = atoi(optarg);
+			break;
 		case 8 /* --a2dp-volume */ :
 			config.a2dp.volume = true;
 			break;
@@ -281,6 +286,7 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
+	bluez_set_configuration();
 	bluez_subscribe_signals();
 
 	bluez_register_a2dp();

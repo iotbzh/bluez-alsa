@@ -101,6 +101,12 @@ struct ba_config {
 		 * of this control type is a monophonic volume change. */
 		bool volume;
 
+		/* Since the transport settings are selected in an automatic fashion (and
+		 * before PCM is opened), it is not possible to select desired options by
+		 * the user. However, one might specify desired target sampling frequency,
+		 * so our algorithm will try to select the nearest value. */
+		int target_freq;
+
 		/* Support for monophonic sound in the A2DP profile is mandatory for
 		 * sink and semi-mandatory for source. So, if one wants only the bare
 		 * minimum, it would be possible - e.g. due to bandwidth limitations. */

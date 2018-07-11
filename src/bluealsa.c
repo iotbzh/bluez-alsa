@@ -49,6 +49,7 @@ struct ba_config config = {
 		HFP_AG_FEAT_CODEC,
 
 	.a2dp.volume = false,
+	.a2dp.target_freq = 48000,
 	.a2dp.force_mono = false,
 	.a2dp.force_44100 = false,
 
