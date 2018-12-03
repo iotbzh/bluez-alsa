@@ -6,7 +6,8 @@ TESTS = \
 	test-ctl \
 	test-io \
 	test-pcm \
-	test-utils
+	test-utils \
+	test-bluealsalib
 
 check_PROGRAMS = \
 	server-mock \
@@ -14,7 +15,8 @@ check_PROGRAMS = \
 	test-ctl \
 	test-io \
 	test-pcm \
-	test-utils
+	test-utils \
+	test-bluealsalib
 
 check_LTLIBRARIES = \
 	aloader.la
@@ -25,6 +27,7 @@ aloader_la_LDFLAGS = \
 
 AM_CFLAGS = \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/includes \
 	@AAC_CFLAGS@ \
 	@ALSA_CFLAGS@ \
 	@APTX_CFLAGS@ \
@@ -46,4 +49,5 @@ LDADD = \
 	@GLIB2_LIBS@ \
 	@LDAC_ABR_LIBS@ \
 	@LDAC_LIBS@ \
-	@SBC_LIBS@
+	@SBC_LIBS@ \
+	../src/bluealsalib/libbluealsa.la

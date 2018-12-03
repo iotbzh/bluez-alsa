@@ -24,7 +24,7 @@
 
 #include "a2dp-codecs.h"
 #include "bluez.h"
-#include "shared/log.h"
+#include <bluealsa/log.h>
 
 
 /**

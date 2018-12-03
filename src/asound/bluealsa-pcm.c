@@ -23,11 +23,11 @@
 #include <alsa/asoundlib.h>
 #include <alsa/pcm_external.h>
 
-#include "shared/ctl-client.h"
-#include "shared/ctl-proto.h"
-#include "shared/defs.h"
-#include "shared/log.h"
-#include "shared/rt.h"
+#include <bluealsa/ctl-client.h>
+#include <bluealsa/ctl-proto.h>
+#include <bluealsa/defs.h>
+#include <bluealsa/log.h>
+#include <bluealsa/rt.h>
 
 
 struct bluealsa_pcm {

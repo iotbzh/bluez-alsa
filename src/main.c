@@ -37,8 +37,8 @@
 #endif
 #include "transport.h"
 #include "utils.h"
-#include "shared/defs.h"
-#include "shared/log.h"
+#include <bluealsa/defs.h>
+#include <bluealsa/log.h>
 
 
 static char *get_a2dp_codecs(

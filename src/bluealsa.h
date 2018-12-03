@@ -27,7 +27,7 @@
 #include "bluez.h"
 #include "bluez-a2dp.h"
 #include "transport.h"
-#include "shared/ctl-proto.h"
+#include <bluealsa/ctl-proto.h>
 
 struct ba_config {
 

@@ -17,11 +17,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <bluealsa/defs.h>
 #include "bluealsa.h"
 #include "ctl.h"
 #include "utils.h"
-#include "shared/defs.h"
-#include "shared/log.h"
+#include <bluealsa/log.h>
 
 
 /**

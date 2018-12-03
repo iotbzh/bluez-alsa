@@ -13,7 +13,7 @@
 #endif
 
 #include "bluez-a2dp.h"
-#include "shared/defs.h"
+#include <bluealsa/defs.h>
 
 static const a2dp_sbc_t a2dp_sbc = {
 	.frequency =

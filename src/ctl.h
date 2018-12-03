@@ -11,7 +11,7 @@
 #ifndef BLUEALSA_CTL_H_
 #define BLUEALSA_CTL_H_
 
-#include "shared/ctl-proto.h"
+#include <bluealsa/ctl-proto.h>
 
 /* Indexes of special file descriptors in the poll array. */
 #define CTL_IDX_SRV 0

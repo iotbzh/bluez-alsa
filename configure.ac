@@ -152,8 +152,10 @@ AC_CONFIG_FILES([
 	Makefile
 	src/Makefile
 	src/asound/Makefile
+	src/bluealsalib/Makefile
 	utils/Makefile
-	test/Makefile])
+	test/Makefile
+	src/bluealsalib/bluealsa.pc])
 AC_OUTPUT
 
 # warn user that alsa-lib thread-safety makes troubles

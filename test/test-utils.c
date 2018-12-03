@@ -10,11 +10,11 @@
 
 #include <check.h>
 
+#include <bluealsa/defs.h>
+#include <bluealsa/ffb.h>
+#include <bluealsa/rt.h>
+
 #include "../src/utils.c"
-#include "../src/shared/defs.h"
-#include "../src/shared/ffb.c"
-#include "../src/shared/log.c"
-#include "../src/shared/rt.c"
 
 START_TEST(test_dbus_profile_object_path) {
 

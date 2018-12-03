@@ -2,12 +2,9 @@
 # Copyright (c) 2016-2018 Arkadiusz Bokowy
 
 bin_PROGRAMS = bluealsa
-SUBDIRS = asound
+SUBDIRS = bluealsalib asound
 
 bluealsa_SOURCES = \
-	shared/ffb.c \
-	shared/log.c \
-	shared/rt.c \
 	at.c \
 	bluealsa.c \
 	bluez.c \
@@ -34,7 +31,8 @@ AM_CFLAGS = \
 	@APTX_CFLAGS@ \
 	@LDAC_CFLAGS@ \
 	@LDAC_ABR_CFLAGS@ \
-	@SBC_CFLAGS@
+	@SBC_CFLAGS@ \
+	-I$(top_srcdir)/includes
 
 LDADD = \
 	@BLUEZ_LIBS@ \
@@ -44,4 +42,5 @@ LDADD = \
 	@APTX_LIBS@ \
 	@LDAC_LIBS@ \
 	@LDAC_ABR_LIBS@ \
-	@SBC_LIBS@
+	@SBC_LIBS@ \
+	bluealsalib/libbluealsa.la

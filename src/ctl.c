@@ -32,8 +32,8 @@
 #include "hfp.h"
 #include "transport.h"
 #include "utils.h"
-#include "shared/defs.h"
-#include "shared/log.h"
+#include <bluealsa/defs.h>
+#include <bluealsa/log.h>
 
 /* Special PCM type for internal usage only. */
 #define BA_PCM_TYPE_RFCOMM 0x1F

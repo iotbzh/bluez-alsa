@@ -12,7 +12,7 @@
 #define BLUEALSA_SHARED_CTLCLIENT_H_
 
 #include <stdbool.h>
-#include "shared/ctl-proto.h"
+#include <bluealsa/ctl-proto.h>
 
 int bluealsa_open(const char *interface);
 

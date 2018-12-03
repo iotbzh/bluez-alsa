@@ -11,7 +11,6 @@
 #include <check.h>
 
 #include "../src/at.c"
-#include "../src/shared/log.c"
 
 START_TEST(test_at_build) {
 

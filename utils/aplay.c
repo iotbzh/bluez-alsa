@@ -25,10 +25,10 @@
 #include <alsa/asoundlib.h>
 #include <gio/gio.h>
 
-#include "shared/ctl-client.h"
-#include "shared/defs.h"
-#include "shared/ffb.h"
-#include "shared/log.h"
+#include <bluealsa/ctl-client.h>
+#include <bluealsa/defs.h>
+#include <bluealsa/ffb.h>
+#include <bluealsa/log.h>
 
 struct pcm_worker {
 	struct ba_msg_transport transport;

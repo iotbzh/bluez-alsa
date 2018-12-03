@@ -8,7 +8,7 @@
  *
  */
 
-#include "shared/ffb.h"
+#include "../../includes/bluealsa/ffb.h"
 
 
 /**

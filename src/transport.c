@@ -34,7 +34,7 @@
 #include "io.h"
 #include "rfcomm.h"
 #include "utils.h"
-#include "shared/log.h"
+#include <bluealsa/log.h>
 
 
 static const char *transport_type_to_string(enum ba_transport_type type) {

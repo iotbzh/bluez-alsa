@@ -6,32 +6,31 @@ bin_PROGRAMS =
 if ENABLE_APLAY
 bin_PROGRAMS += bluealsa-aplay
 bluealsa_aplay_SOURCES = \
-	../src/shared/ctl-client.c \
-	../src/shared/ffb.c \
-	../src/shared/log.c \
 	aplay.c
 bluealsa_aplay_CFLAGS = \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/includes \
 	@ALSA_CFLAGS@ \
 	@BLUEZ_CFLAGS@ \
 	@GIO2_CFLAGS@
 bluealsa_aplay_LDADD = \
 	@ALSA_LIBS@ \
 	@BLUEZ_LIBS@ \
-	@GIO2_LIBS@
+	@GIO2_LIBS@ \
+	../src/bluealsalib/libbluealsa.la
 endif
 
 if ENABLE_RFCOMM
 bin_PROGRAMS += bluealsa-rfcomm
 bluealsa_rfcomm_SOURCES = \
-	../src/shared/ctl-client.c \
-	../src/shared/log.c \
 	rfcomm.c
 bluealsa_rfcomm_CFLAGS = \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/includes \
 	@BLUEZ_CFLAGS@
 bluealsa_rfcomm_LDADD = \
 	@BLUEZ_LIBS@ \
+	../src/bluealsalib/libbluealsa.la \
 	-lreadline
 endif
 

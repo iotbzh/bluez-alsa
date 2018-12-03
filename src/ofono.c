@@ -27,7 +27,7 @@
 #include "ctl.h"
 #include "ofono-iface.h"
 #include "transport.h"
-#include "shared/log.h"
+#include <bluealsa/log.h>
 
 #define OFONO_FAKE_DEV_ID 0xffff
 
