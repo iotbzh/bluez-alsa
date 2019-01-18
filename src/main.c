@@ -12,6 +12,7 @@
 # include "config.h"
 #endif
 
+#define _GNU_SOURCE
 #include <errno.h>
 #include <getopt.h>
 #include <signal.h>
@@ -56,6 +57,20 @@ static char *get_a2dp_codecs(
 	}
 
 	return g_strjoinv(", ", (char **)tmp);
+}
+
+static void name_acquired_handler(
+		GDBusConnection *connection,
+		const gchar *name,
+		gpointer user_data) {
+	debug("Acquired name: %s", name);
+}
+
+static void name_lost_handler(
+		GDBusConnection *connection,
+		const gchar *name,
+		gpointer user_data) {
+	debug("Lost name: %s", name);
 }
 
 static GMainLoop *loop = NULL;
@@ -318,6 +333,7 @@ int main(int argc, char **argv) {
 	GError *err;
 
 	err = NULL;
+
 	address = g_dbus_address_get_for_bus_sync(G_BUS_TYPE_SYSTEM, NULL, NULL);
 	if ((config.dbus = g_dbus_connection_new_for_address_sync(address,
 					G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT |
@@ -335,6 +351,19 @@ int main(int argc, char **argv) {
 	ofono_subscribe_signals();
 	ofono_register();
 #endif
+
+	char * name_on_bus = NULL;
+	asprintf(&name_on_bus, "org.bluez-alsa.%s", config.hci_dev.name);
+
+	guint g_dbusid;
+	g_dbusid = g_bus_own_name_on_connection(config.dbus,
+								name_on_bus,
+								G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT |
+								G_BUS_NAME_OWNER_FLAGS_REPLACE,
+								name_acquired_handler,
+								name_lost_handler,
+								NULL,
+								NULL);
 
 	/* In order to receive EPIPE while writing to the pipe whose reading end
 	 * is closed, the SIGPIPE signal has to be handled. For more information
@@ -358,6 +387,9 @@ int main(int argc, char **argv) {
 	 * to unlink named sockets, otherwise service will not start any more. */
 	bluealsa_ctl_free();
 	bluealsa_config_free();
+
+	g_bus_unown_name (g_dbusid);
+	free(name_on_bus);
 
 	return EXIT_SUCCESS;
 }

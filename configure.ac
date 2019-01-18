@@ -130,6 +130,16 @@ AC_ARG_WITH([alsaconfdir],
 		[alsaconfdir="$sysconfdir/alsa/conf.d"],
 		[alsaconfdir="$datadir/alsa/alsa.conf.d"])])
 
+AC_ARG_WITH(dbusconfdir, AC_HELP_STRING([--with-dbusconfdir=PATH],
+	[path to D-Bus config directory]), [path_dbusconf=${withval}],
+		[path_dbusconf="`$PKG_CONFIG --variable=sysconfdir dbus-1`"])
+if (test -z "${path_dbusconf}"); then
+	DBUS_CONFDIR="${sysconfdir}/dbus-1/system.d"
+else
+	DBUS_CONFDIR="${path_dbusconf}/dbus-1/system.d"
+fi
+AC_SUBST(DBUS_CONFDIR)
+
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 test "x$exec_prefix" = xNONE && exec_prefix=$prefix
 

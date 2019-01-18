@@ -23,6 +23,9 @@ bluealsa_SOURCES += \
 	ofono-iface.c
 endif
 
+dbusconfdir = @DBUS_CONFDIR@
+dist_dbusconf_DATA = bluez-alsa.conf
+
 AM_CFLAGS = \
 	@BLUEZ_CFLAGS@ \
 	@GLIB2_CFLAGS@ \
